@@ -1,0 +1,7 @@
+title = "Files to copy"
+
+max_threads = 4
+
+dist = "q:\\"
+
+files = ["first.dat", "second.dat"]
