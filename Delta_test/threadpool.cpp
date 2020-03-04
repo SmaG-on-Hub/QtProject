@@ -23,6 +23,8 @@ void ThreadPool::tryExecute()
         threads_vec_.back().join();
         threads_vec_.pop_back();
     }
+
+    std::cout<< std::endl << "Size of vector: " << threads_vec_.size();
 }
 
 ThreadPool::~ThreadPool()

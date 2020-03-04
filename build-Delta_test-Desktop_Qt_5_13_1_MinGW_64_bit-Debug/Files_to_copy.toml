@@ -2,6 +2,11 @@ title = "Files to copy"
 
 max_threads = 4
 
+#rate in MB
+max_rate = 50
+
+#distination absolute path
 dist = "q:\\"
 
+#files to be copied
 files = ["first.dat", "second.dat"]
