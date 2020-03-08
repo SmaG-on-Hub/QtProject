@@ -1,12 +1,12 @@
 title = "Files to copy"
 
-max_threads = 4
+max_threads = 2
 
-#rate in MB
-max_rate = 50
+#rate in MB (0 - unrestricted)
+max_rate = 0
 
 #distination absolute path
 dist = "q:\\"
 
 #files to be copied
-files = ["first.dat", "second.dat"]
+files = ["first.dat", "second.dat", "third.dat", "fourth.dat"]

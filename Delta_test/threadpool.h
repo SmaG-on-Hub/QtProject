@@ -3,10 +3,11 @@
 #ifndef THREADPOOL_H
 #define THREADPOOL_H
 
+#include <condition_variable>
 #include <functional>
 #include <iostream>
 #include <atomic>
-#include <vector>
+#include <list>
 #include <thread>
 
 
@@ -16,23 +17,32 @@ public:
     ThreadPool();
     void setMaxThreadsCount(unsigned char tCount);
     unsigned char getThreadsCount() const;
-    void tryExecute();
+    void Execute();
     ~ThreadPool();
 
     template<typename Function, typename... Args>
     void add(Function&& funcObject, Args&&... args)
     {
-       threads_vec_.emplace_back(std::thread(std::forward<Function>(funcObject), std::forward<Args>(args)...));
+        std::function<void()> func = std::bind(funcObject, args...);
+        tasks_.emplace_back([&, func_to_thread = std::move(func)]()
+        {
+            ++active_threads_;
+            func_to_thread();
+            --active_threads_;
+            cond_var_.notify_one();
+        });
+
+        std::cout<<"Item is added to queue!\n";
     }
 
 private:
-    std::vector<std::thread> threads_vec_;
+    std::list<std::function<void()>> tasks_;
+    std::list<std::thread> threads_list_;
 
+    std::condition_variable cond_var_;
     std::atomic_uchar active_threads_ {0};
+    std::mutex mutex_;
     unsigned char max_threads_ {2};
 };
-
-//std::atomic<unsigned char> ThreadPool::active_threads_;
-//unsigned char ThreadPool::MAX_THREADS_ {2};
 
 #endif // THREADPOOL_H

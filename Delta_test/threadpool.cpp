@@ -13,19 +13,28 @@ void ThreadPool::setMaxThreadsCount(unsigned char tCount)
 
 unsigned char ThreadPool::getThreadsCount() const
 {
-    return active_threads_;
+    return active_threads_.load();
 }
 
-void ThreadPool::tryExecute()
+void ThreadPool::Execute()
 {
-    while(!threads_vec_.empty())
+
+    while(!tasks_.empty())
     {
-        threads_vec_.back().join();
-        threads_vec_.pop_back();
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+            cond_var_.wait(lock, [&](){return active_threads_.load() < max_threads_;});
+        }
+
+        threads_list_.emplace_front(std::move(tasks_.front()));
+        tasks_.pop_front();
     }
 
-    std::cout<< std::endl << "Size of vector: " << threads_vec_.size();
+    for (auto& thread : threads_list_)
+        if (thread.joinable())
+            thread.join();
 }
+
 
 ThreadPool::~ThreadPool()
 {
