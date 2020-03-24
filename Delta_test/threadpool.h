@@ -26,13 +26,10 @@ public:
         std::function<void()> func = std::bind(funcObject, args...);
         tasks_.emplace_back([&, func_to_thread = std::move(func)]()
         {
-            ++active_threads_;
             func_to_thread();
             --active_threads_;
             cond_var_.notify_one();
         });
-
-        std::cout<<"Item is added to queue!\n";
     }
 
 private:

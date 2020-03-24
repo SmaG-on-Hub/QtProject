@@ -8,7 +8,8 @@ ThreadPool::ThreadPool()
 
 void ThreadPool::setMaxThreadsCount(unsigned char tCount)
 {
-    max_threads_ = tCount;
+    unsigned char max_hard_threads = std::thread::hardware_concurrency();
+    max_threads_ = tCount > max_hard_threads ? max_hard_threads : tCount;
 }
 
 unsigned char ThreadPool::getThreadsCount() const
@@ -19,6 +20,8 @@ unsigned char ThreadPool::getThreadsCount() const
 void ThreadPool::Execute()
 {
 
+    std::cout<< "Number of files to copy:" << tasks_.size() << "\n\n"<< std::endl;
+
     while(!tasks_.empty())
     {
         {
@@ -28,6 +31,7 @@ void ThreadPool::Execute()
 
         threads_list_.emplace_front(std::move(tasks_.front()));
         tasks_.pop_front();
+        ++active_threads_;
     }
 
     for (auto& thread : threads_list_)

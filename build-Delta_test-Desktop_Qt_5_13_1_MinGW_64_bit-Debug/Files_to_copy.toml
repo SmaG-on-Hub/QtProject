@@ -1,9 +1,9 @@
 title = "Files to copy"
 
-max_threads = 2
+max_threads = 4
 
 #rate in MB (0 - unrestricted)
-max_rate = 0
+max_rate = 30
 
 #distination absolute path
 dist = "q:\\"
